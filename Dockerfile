@@ -17,25 +17,20 @@ RUN npm run build
 WORKDIR /app/backend
 RUN npm ci --omit=dev
 
-# Runtime stage
-FROM node:24-alpine
+# Runtime stage - minimal Alpine with just Node
+FROM alpine:latest
 
 WORKDIR /app
+
+# Install only Node.js, no npm
+RUN apk add --no-cache nodejs
 
 # Copy only what we need from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/backend/node_modules ./backend/node_modules
-COPY --from=builder /app/node_modules ./node_modules
 
 # Copy application files
 COPY backend ./backend
-COPY run.sh ./run.sh
-
-# Make script executable
-RUN chmod +x ./run.sh && \
-    echo "#!/bin/sh" > /app/.entry && \
-    echo "exec bash /app/run.sh" >> /app/.entry && \
-    chmod +x /app/.entry
 
 # Set environment
 ENV NODE_ENV=production
@@ -45,7 +40,7 @@ ENV HOST=0.0.0.0
 # Expose port
 EXPOSE 8080
 
-# Explicit entrypoint to bypass npm completely
-ENTRYPOINT []
-CMD ["/bin/sh", "-c", "exec node /app/backend/src/server.js"]
+# Direct Node.js execution - NO npm, NO shell
+ENTRYPOINT ["node"]
+CMD ["backend/src/server.js"]
 
