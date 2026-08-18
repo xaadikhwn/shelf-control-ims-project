@@ -1,5 +1,5 @@
-# Use official Node.js runtime as base image
-FROM node:24-alpine
+# Multi-stage build
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY backend/package*.json ./backend/
 
-# Install root dependencies
+# Install dependencies
 RUN npm ci --omit=dev
 
 # Build frontend
@@ -17,17 +17,31 @@ RUN npm run build
 WORKDIR /app/backend
 RUN npm ci --omit=dev
 
-# Copy rest of application code
-WORKDIR /app
-COPY . .
+# Runtime stage
+FROM node:24-alpine
 
-# Expose port
-EXPOSE 8080
+WORKDIR /app
+
+# Copy only what we need from builder
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/backend/node_modules ./backend/node_modules
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy application files
+COPY backend ./backend
+COPY run.sh .
+
+# Make script executable
+RUN chmod +x run.sh
 
 # Set environment
 ENV NODE_ENV=production
 ENV PORT=8080
+ENV HOST=0.0.0.0
 
-# Start backend server directly (serves API + frontend static files)
-CMD ["node", "backend/src/server.js"]
+# Expose port
+EXPOSE 8080
+
+# Start the application
+CMD ["bash", "run.sh"]
 
