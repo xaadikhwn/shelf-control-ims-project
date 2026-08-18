@@ -29,10 +29,13 @@ COPY --from=builder /app/node_modules ./node_modules
 
 # Copy application files
 COPY backend ./backend
-COPY run.sh .
+COPY run.sh ./run.sh
 
 # Make script executable
-RUN chmod +x run.sh
+RUN chmod +x ./run.sh && \
+    echo "#!/bin/sh" > /app/.entry && \
+    echo "exec bash /app/run.sh" >> /app/.entry && \
+    chmod +x /app/.entry
 
 # Set environment
 ENV NODE_ENV=production
@@ -42,6 +45,7 @@ ENV HOST=0.0.0.0
 # Expose port
 EXPOSE 8080
 
-# Start the application
-CMD ["bash", "run.sh"]
+# Explicit entrypoint to bypass npm completely
+ENTRYPOINT []
+CMD ["/bin/sh", "-c", "exec node /app/backend/src/server.js"]
 
