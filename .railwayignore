@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+.git
+.gitignore
+.env.example
+backend/.env.example
+README.md
+DEPLOYMENT_GUIDE.md
+README_DEPLOYMENT.md
+*.sqlite
+.vscode
+.idea
+.DS_Store

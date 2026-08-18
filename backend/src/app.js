@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -28,7 +29,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-// Routes
+// Serve static files from the built frontend
+app.use(express.static(path.join(__dirname, '../../dist')));
+
+// API Routes
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/dashboard', require('./routes/dashboard.routes'));
 app.use('/api/sales', require('./routes/sales.routes'));
@@ -40,6 +44,11 @@ app.use('/api/suppliers', require('./routes/suppliers.routes'));
 app.use('/api/users', require('./routes/users.routes'));
 
 app.get(['/health', '/api/health'], (req, res) => res.json({ success: true, message: 'API is running' }));
+
+// Fallback to index.html for SPA client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../dist/index.html'));
+});
 
 // Global error handler
 app.use(errorHandler);
