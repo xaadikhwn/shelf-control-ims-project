@@ -1,0 +1,277 @@
+import type { Customer } from '../types/customer';
+import type { Supplier } from '../types/supplier';
+import type { Product } from '../types/product';
+import type { SalesOrder } from '../types/salesOrder';
+import type { Employee } from '../types/employee';
+import type { Expense } from '../types/expense';
+import type { DashboardSummary } from '../types';
+
+export const customers: Customer[] = [
+  {
+    id: 'CUST-001',
+    company: 'Ahmed Textiles Ltd',
+    contact: 'Raza Ahmed',
+    phone: '+44 7700 900123',
+    creditLimit: 25000,
+    outstanding: 8450,
+    lastOrder: '28 Dec 2024',
+    status: 'active',
+    orders: [
+      { id: 'SO-2024-001', date: '28 Dec 2024', items: 12, total: 8450, status: 'delivered', payment: 'paid' },
+    ],
+  },
+  {
+    id: 'CUST-002',
+    company: 'Khan & Brothers Trading',
+    contact: 'Shahid Khan',
+    phone: '+44 7700 900456',
+    creditLimit: 15000,
+    outstanding: 3200,
+    lastOrder: '27 Dec 2024',
+    status: 'active',
+    orders: [
+      { id: 'SO-2024-002', date: '27 Dec 2024', items: 5, total: 3200, status: 'shipped', payment: 'credit' },
+    ],
+  },
+  {
+    id: 'CUST-003',
+    company: 'Malik Distributors',
+    contact: 'Imran Malik',
+    phone: '+44 7700 900789',
+    creditLimit: 20000,
+    outstanding: 12800,
+    lastOrder: '26 Dec 2024',
+    status: 'warning',
+    orders: [
+      { id: 'SO-2024-003', date: '26 Dec 2024', items: 8, total: 5675.50, status: 'processing', payment: 'credit' },
+      { id: 'SO-2024-010', date: '15 Dec 2024', items: 6, total: 7124.50, status: 'delivered', payment: 'credit' },
+    ],
+  },
+  {
+    id: 'CUST-004',
+    company: 'Sunrise Retail Co.',
+    contact: 'Priya Sharma',
+    phone: '+44 7700 900321',
+    creditLimit: 10000,
+    outstanding: 0,
+    lastOrder: '25 Dec 2024',
+    status: 'active',
+    orders: [
+      { id: 'SO-2024-004', date: '25 Dec 2024', items: 3, total: 1890, status: 'delivered', payment: 'paid' },
+    ],
+  },
+  {
+    id: 'CUST-005',
+    company: 'Qureshi Wholesale',
+    contact: 'Salman Qureshi',
+    phone: '+44 7700 900654',
+    creditLimit: 30000,
+    outstanding: 21400,
+    lastOrder: '24 Dec 2024',
+    status: 'warning',
+    orders: [
+      { id: 'SO-2024-005', date: '24 Dec 2024', items: 20, total: 14200, status: 'shipped', payment: 'credit' },
+      { id: 'SO-2024-011', date: '10 Dec 2024', items: 15, total: 7200, status: 'delivered', payment: 'credit' },
+    ],
+  },
+  {
+    id: 'CUST-006',
+    company: 'Ali Merchandise',
+    contact: 'Adnan Ali',
+    phone: '+44 7700 900987',
+    creditLimit: 8000,
+    outstanding: 4350,
+    lastOrder: '23 Dec 2024',
+    status: 'active',
+    orders: [
+      { id: 'SO-2024-006', date: '23 Dec 2024', items: 7, total: 4350, status: 'delivered', payment: 'credit' },
+    ],
+  },
+  {
+    id: 'CUST-007',
+    company: 'Chaudhry Stores',
+    contact: 'Kamran Chaudhry',
+    phone: '+44 7700 900147',
+    creditLimit: 12000,
+    outstanding: 0,
+    lastOrder: '22 Dec 2024',
+    status: 'active',
+    orders: [
+      { id: 'SO-2024-007', date: '22 Dec 2024', items: 4, total: 2100, status: 'delivered', payment: 'paid' },
+    ],
+  },
+  {
+    id: 'CUST-008',
+    company: 'Hassan Import & Export',
+    contact: 'Yusuf Hassan',
+    phone: '+44 7700 900258',
+    creditLimit: 18000,
+    outstanding: 9200,
+    lastOrder: '21 Dec 2024',
+    status: 'overdue',
+    orders: [
+      { id: 'SO-2024-008', date: '21 Dec 2024', items: 10, total: 9200, status: 'delivered', payment: 'credit' },
+    ],
+  },
+];
+
+export const suppliers: Supplier[] = [
+  {
+    id: 'VND-001',
+    company: 'Global Fabrics Ltd',
+    contact: 'James Wilson',
+    country: 'United Kingdom',
+    payable: 12500,
+    creditTerms: 'Net 30',
+    lastInvoice: '20 Dec 2024',
+    status: 'active',
+  },
+  {
+    id: 'VND-002',
+    company: 'Eastern Thread Co.',
+    contact: 'Li Wei',
+    country: 'China',
+    payable: 8750,
+    creditTerms: 'Net 45',
+    lastInvoice: '18 Dec 2024',
+    status: 'active',
+  },
+  {
+    id: 'VND-003',
+    company: 'Textile Innovations Inc.',
+    contact: 'Sarah Johnson',
+    country: 'United States',
+    payable: 15200,
+    creditTerms: 'Net 30',
+    lastInvoice: '15 Dec 2024',
+    status: 'warning',
+  },
+  {
+    id: 'VND-004',
+    company: 'Karachi Exports',
+    contact: 'Ahmed Raza',
+    country: 'Pakistan',
+    payable: 6300,
+    creditTerms: 'Net 60',
+    lastInvoice: '22 Dec 2024',
+    status: 'active',
+  },
+  {
+    id: 'VND-005',
+    company: 'Milano Fashion Supply',
+    contact: 'Marco Rossi',
+    country: 'Italy',
+    payable: 22100,
+    creditTerms: 'Net 30',
+    lastInvoice: '10 Dec 2024',
+    status: 'overdue',
+  },
+  {
+    id: 'VND-006',
+    company: 'Dhaka Garments Hub',
+    contact: 'Rafiq Islam',
+    country: 'Bangladesh',
+    payable: 4800,
+    creditTerms: 'Net 45',
+    lastInvoice: '19 Dec 2024',
+    status: 'active',
+  },
+  {
+    id: 'VND-007',
+    company: 'IndoTex Suppliers',
+    contact: 'Deepak Patel',
+    country: 'India',
+    payable: 9400,
+    creditTerms: 'Net 30',
+    lastInvoice: '17 Dec 2024',
+    status: 'active',
+  },
+  {
+    id: 'VND-008',
+    company: 'Turkish Cotton Mills',
+    contact: 'Mehmet Yilmaz',
+    country: 'Turkey',
+    payable: 11350,
+    creditTerms: 'Net 45',
+    lastInvoice: '12 Dec 2024',
+    status: 'pending',
+  },
+];
+
+export const products: Product[] = [
+  { sku: 'PRD-001', name: 'Premium Cotton Fabric (50m roll)', category: 'Textiles', qty: 145, reorderPoint: 50, cost: 28.50, price: 42.00, status: 'in-stock' },
+  { sku: 'PRD-002', name: 'Industrial Sewing Thread (1000m)', category: 'Accessories', qty: 12, reorderPoint: 30, cost: 3.20, price: 6.50, status: 'low-stock' },
+  { sku: 'PRD-003', name: 'Polyester Blend (100m roll)', category: 'Textiles', qty: 0, reorderPoint: 40, cost: 19.80, price: 31.00, status: 'out-of-stock' },
+  { sku: 'PRD-004', name: 'Metal Zippers (pack of 50)', category: 'Accessories', qty: 380, reorderPoint: 100, cost: 8.40, price: 15.00, status: 'in-stock' },
+  { sku: 'PRD-005', name: 'Embroidery Machine Needles', category: 'Equipment', qty: 8, reorderPoint: 25, cost: 12.00, price: 22.00, status: 'low-stock' },
+  { sku: 'PRD-006', name: 'Linen Fabric (50m roll)', category: 'Textiles', qty: 78, reorderPoint: 30, cost: 35.00, price: 55.00, status: 'in-stock' },
+  { sku: 'PRD-007', name: 'Fabric Dye Set (12 colours)', category: 'Supplies', qty: 0, reorderPoint: 15, cost: 24.00, price: 40.00, status: 'out-of-stock' },
+  { sku: 'PRD-008', name: 'Elastic Band (100m roll)', category: 'Accessories', qty: 52, reorderPoint: 20, cost: 5.50, price: 10.00, status: 'in-stock' },
+];
+
+export const salesOrders: SalesOrder[] = [
+  { id: 'SO-2024-001', customerId: 'CUST-001', customer: 'Ahmed Textiles Ltd', date: '28 Dec 2024', items: 12, total: 8450, orderStatus: 'delivered', payment: 'paid' },
+  { id: 'SO-2024-002', customerId: 'CUST-002', customer: 'Khan & Brothers Trading', date: '27 Dec 2024', items: 5, total: 3200, orderStatus: 'shipped', payment: 'credit' },
+  { id: 'SO-2024-003', customerId: 'CUST-003', customer: 'Malik Distributors', date: '26 Dec 2024', items: 8, total: 5675.50, orderStatus: 'processing', payment: 'credit' },
+  { id: 'SO-2024-004', customerId: 'CUST-004', customer: 'Sunrise Retail Co.', date: '25 Dec 2024', items: 3, total: 1890, orderStatus: 'delivered', payment: 'paid' },
+  { id: 'SO-2024-005', customerId: 'CUST-005', customer: 'Qureshi Wholesale', date: '24 Dec 2024', items: 20, total: 14200, orderStatus: 'shipped', payment: 'credit' },
+  { id: 'SO-2024-006', customerId: 'CUST-006', customer: 'Ali Merchandise', date: '23 Dec 2024', items: 7, total: 4350, orderStatus: 'delivered', payment: 'credit' },
+  { id: 'SO-2024-007', customerId: 'CUST-007', customer: 'Chaudhry Stores', date: '22 Dec 2024', items: 4, total: 2100, orderStatus: 'delivered', payment: 'paid' },
+  { id: 'SO-2024-008', customerId: 'CUST-008', customer: 'Hassan Import & Export', date: '21 Dec 2024', items: 10, total: 9200, orderStatus: 'delivered', payment: 'credit' },
+  { id: 'SO-2024-009', customerId: 'CUST-001', customer: 'Ahmed Textiles Ltd', date: '20 Dec 2024', items: 6, total: 3750, orderStatus: 'delivered', payment: 'paid' },
+  { id: 'SO-2024-010', customerId: 'CUST-003', customer: 'Malik Distributors', date: '15 Dec 2024', items: 6, total: 7124.50, orderStatus: 'delivered', payment: 'credit' },
+];
+
+export const employees: Employee[] = [
+  { id: 'EMP-001', name: 'Sarah Mitchell', department: 'Sales', role: 'Sales Manager', gross: 3800, deductions: 760, netPay: 3040, payDate: '28 Dec 2024', status: 'paid' },
+  { id: 'EMP-002', name: 'David Chen', department: 'Operations', role: 'Operations Lead', gross: 3200, deductions: 640, netPay: 2560, payDate: '28 Dec 2024', status: 'paid' },
+  { id: 'EMP-003', name: 'Emma Thompson', department: 'Finance', role: 'Accountant', gross: 2900, deductions: 580, netPay: 2320, payDate: '28 Dec 2024', status: 'paid' },
+  { id: 'EMP-004', name: 'James Rodriguez', department: 'Warehouse', role: 'Stock Controller', gross: 2400, deductions: 480, netPay: 1920, payDate: '28 Dec 2024', status: 'paid' },
+  { id: 'EMP-005', name: 'Fatima Khan', department: 'HR', role: 'HR Coordinator', gross: 2600, deductions: 520, netPay: 2080, payDate: '28 Dec 2024', status: 'paid' },
+  { id: 'EMP-006', name: 'Omar Hassan', department: 'Sales', role: 'Sales Executive', gross: 2200, deductions: 440, netPay: 1760, payDate: '28 Dec 2024', status: 'pending' },
+  { id: 'EMP-007', name: 'Lisa Park', department: 'IT', role: 'IT Support', gross: 2600, deductions: 520, netPay: 2080, payDate: '28 Dec 2024', status: 'pending' },
+];
+
+export const expenses: Expense[] = [
+  { ref: 'EXP-001', description: 'Warehouse Rental — December', category: 'Rent', amount: 3500, date: '01 Dec 2024', submittedBy: 'Aisha Rahman', status: 'approved' },
+  { ref: 'EXP-002', description: 'Fleet Vehicle Servicing', category: 'Transport', amount: 840, date: '05 Dec 2024', submittedBy: 'Tariq Hassan', status: 'approved' },
+  { ref: 'EXP-003', description: 'Office Supplies & Stationery', category: 'Office', amount: 185, date: '08 Dec 2024', submittedBy: 'Nadia Hussain', status: 'approved' },
+  { ref: 'EXP-004', description: 'Cloud Hosting Services', category: 'IT', amount: 320, date: '10 Dec 2024', submittedBy: 'Zaineb Ahmed', status: 'approved' },
+  { ref: 'EXP-005', description: 'Trade Exhibition Booth', category: 'Marketing', amount: 2200, date: '12 Dec 2024', submittedBy: 'Bilal Chaudhry', status: 'pending' },
+  { ref: 'EXP-006', description: 'Electricity & Utilities', category: 'Utilities', amount: 760, date: '15 Dec 2024', submittedBy: 'Omar Khan', status: 'approved' },
+  { ref: 'EXP-007', description: 'Legal & Compliance Fees', category: 'Professional', amount: 1400, date: '18 Dec 2024', submittedBy: 'Aisha Rahman', status: 'pending' },
+  { ref: 'EXP-008', description: 'Staff Training Workshop', category: 'HR', amount: 650, date: '20 Dec 2024', submittedBy: 'Nadia Hussain', status: 'rejected' },
+];
+
+export const dashboardSummary: DashboardSummary = {
+  totalRevenue: 91700,
+  revenueTrend: '+11.4% vs Nov',
+  outstandingCredit: 59400,
+  creditAccounts: 6,
+  overdueAccounts: 1,
+  stockAlerts: 4,
+  outOfStock: 2,
+  monthlyPayroll: 18270,
+  payrollEmployees: 7,
+  payrollProcessed: '5/7',
+  revenueByMonth: [
+    { month: 'Jan', revenue: 42000, expenses: 28000 },
+    { month: 'Feb', revenue: 48000, expenses: 31000 },
+    { month: 'Mar', revenue: 55000, expenses: 35000 },
+    { month: 'Apr', revenue: 51000, expenses: 33000 },
+    { month: 'May', revenue: 62000, expenses: 38000 },
+    { month: 'Jun', revenue: 58000, expenses: 36000 },
+    { month: 'Jul', revenue: 65000, expenses: 40000 },
+    { month: 'Aug', revenue: 70000, expenses: 42000 },
+    { month: 'Sep', revenue: 68000, expenses: 41000 },
+    { month: 'Oct', revenue: 75000, expenses: 45000 },
+    { month: 'Nov', revenue: 82000, expenses: 48000 },
+    { month: 'Dec', revenue: 91700, expenses: 52000 },
+  ],
+  salesByCategory: [
+    { category: 'Textiles', percentage: 48, color: '#3b82f6' },
+    { category: 'Accessories', percentage: 22, color: '#22c55e' },
+    { category: 'Equipment', percentage: 15, color: '#f59e0b' },
+    { category: 'Supplies', percentage: 15, color: '#8b5cf6' },
+  ],
+};
