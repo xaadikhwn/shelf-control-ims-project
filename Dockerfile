@@ -7,10 +7,10 @@ WORKDIR /app
 COPY package*.json ./
 COPY backend/package*.json ./backend/
 
-# Install root dependencies (minimal) - database not needed for build
+# Install root dependencies
 RUN npm ci --omit=dev 2>&1 | grep -v "npm warn" || true
 
-# Build frontend - database not needed
+# Build frontend
 RUN npm run build 2>&1
 
 # Install backend dependencies
@@ -22,18 +22,15 @@ WORKDIR /app
 COPY . .
 
 # Ensure dist directory exists
-RUN mkdir -p dist && test -f dist/index.html || echo "Frontend build complete"
+RUN mkdir -p dist
 
 # Expose port
 EXPOSE 8080
 
-# Runtime environment variables (DATABASE_URL will be injected by Railway at runtime)
+# Set environment
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:8080/api/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+# Start backend server (serves API + frontend static files)
+CMD ["bash", "start.sh"]
 
-# Start backend server (which serves both API and frontend)
-CMD ["node", "backend/src/server.js"]
