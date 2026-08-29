@@ -6,7 +6,12 @@ const normalizeDialect = (value) => {
   return value;
 };
 
-const getDialect = () => {
+// DATABASE_URL's own prefix always wins over DB_DIALECT: when a connection
+// string is provided (e.g. a Supabase postgres:// URL), it unambiguously
+// states the real dialect, and a stale/leftover DB_DIALECT env var (like one
+// left over from a previous MySQL setup) must not override it and cause the
+// app to speak the wrong wire protocol to the database host.
+const getDialect = (defaultDialect = 'sqlite') => {
   if (process.env.DATABASE_URL) {
     const url = process.env.DATABASE_URL.toLowerCase();
     if (url.startsWith('mysql://') || url.startsWith('mysql2://')) return 'mysql';
@@ -16,7 +21,7 @@ const getDialect = () => {
   const configuredDialect = normalizeDialect(process.env.DB_DIALECT);
   if (configuredDialect) return configuredDialect;
 
-  return 'sqlite';
+  return defaultDialect;
 };
 
 const getDialectOptions = () => {
@@ -32,7 +37,7 @@ const getDialectOptions = () => {
   return {};
 };
 
-const dialect = getDialect();
+const dialect = getDialect('sqlite');
 
 module.exports = {
   development: {
@@ -59,7 +64,7 @@ module.exports = {
     database: `${(process.env.DB_NAME || 'bizmanage').replace(/_test$/, '')}_test`,
     host: process.env.DB_HOST || '127.0.0.1',
     port: process.env.DB_PORT || 3306,
-    dialect: normalizeDialect(process.env.DB_DIALECT) || getDialect() || 'sqlite',
+    dialect: getDialect('sqlite'),
     storage: process.env.DB_STORAGE || ':memory:',
     logging: false,
     ...(Object.keys(getDialectOptions()).length ? { dialectOptions: getDialectOptions() } : {}),
@@ -70,7 +75,7 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: normalizeDialect(process.env.DB_DIALECT) || getDialect() || 'mysql',
+    dialect: getDialect('mysql'),
     logging: false,
     ...(process.env.DATABASE_URL ? { url: process.env.DATABASE_URL } : {}),
     ...(Object.keys(getDialectOptions()).length ? { dialectOptions: getDialectOptions() } : {}),

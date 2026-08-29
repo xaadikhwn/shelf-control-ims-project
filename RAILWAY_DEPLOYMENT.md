@@ -24,28 +24,23 @@ git push origin main
 3. Select your repository
 4. Railway will auto-detect the Dockerfile and build
 
-### Step 3: Add MySQL Database
-1. In your Railway project, click **"Add Service"** → **"MySQL"**
-2. Railway creates database and provides `DATABASE_URL`
+### Step 3: Create a Supabase Database
+1. Go to [Supabase](https://supabase.com) → **New Project**
+2. Once it's provisioned, go to **Project Settings → Database → Connection string → URI**
+3. Copy the **pooler** connection string (port `6543`) — it looks like:
+   `postgresql://postgres.xxxxxxxxxxxx:your-password@aws-0-<region>.pooler.supabase.com:6543/postgres`
 
 ### Step 4: Set Environment Variables
-Go to **Variables** tab and add:
+Go to Railway's **Variables** tab and add:
 
 ```
 NODE_ENV=production
 PORT=8080
 HOST=0.0.0.0
 
-# Using DATABASE_URL from Railway MySQL plugin:
-DATABASE_URL=${{DATABASE_URL}}
-
-# OR using individual variables:
-DB_DIALECT=mysql
-DB_HOST=${{DATABASE_HOST}}
-DB_PORT=${{DATABASE_PORT}}
-DB_NAME=${{DATABASE_NAME}}
-DB_USER=${{DATABASE_USER}}
-DB_PASSWORD=${{DATABASE_PASSWORD}}
+# Supabase (Postgres) — dialect is auto-detected from the postgres:// prefix
+DATABASE_URL=postgresql://postgres.xxxxxxxxxxxx:your-password@aws-0-<region>.pooler.supabase.com:6543/postgres
+DB_SSL=true
 
 # JWT Secrets (generate random strings)
 JWT_ACCESS_SECRET=your_64_char_random_string_here
@@ -100,7 +95,7 @@ Single unified application
 - [x] Environment templates created
 - [ ] Push to GitHub
 - [ ] Create Railway project
-- [ ] Add MySQL database
+- [ ] Create Supabase project and copy the pooler connection string
 - [ ] Set environment variables
 - [ ] Verify deployment in logs
 - [ ] Test login at your Railway URL
@@ -124,14 +119,14 @@ Single unified application
    - Check build logs for errors in vite/TypeScript compilation
 
 4. **Database connection error**
-   - Verify DATABASE_URL or individual DB_* variables are set
-   - Check MySQL service is running
+   - Verify `DATABASE_URL` is set to the Supabase pooler string and `DB_SSL=true`
+   - Confirm the Supabase project isn't paused (free-tier projects pause after inactivity)
 
 ### Debug Locally
 ```bash
 # Test the exact Docker build Railway uses:
 docker build -t bizmanage .
-docker run -p 8080:8080 -e DATABASE_URL=mysql://user:pass@host/db bizmanage
+docker run -p 8080:8080 -e DATABASE_URL=postgresql://user:pass@host:6543/postgres -e DB_SSL=true bizmanage
 ```
 
 ---
@@ -161,12 +156,8 @@ project-root/
 
 | Variable | Value |
 |----------|-------|
-| `${{DATABASE_URL}}` | Auto-provided by MySQL plugin |
-| `${{DATABASE_HOST}}` | MySQL host |
-| `${{DATABASE_PORT}}` | MySQL port (3306) |
-| `${{DATABASE_NAME}}` | Database name |
-| `${{DATABASE_USER}}` | Database user |
-| `${{DATABASE_PASSWORD}}` | Database password |
+| `DATABASE_URL` | Supabase pooler connection string (from Project Settings → Database) |
+| `DB_SSL` | Set to `true` for Supabase |
 | `${{RAILWAY_STATIC_URL}}` | Your Railway app's public URL |
 
 ---
@@ -175,7 +166,7 @@ project-root/
 
 1. **Push the fixed code** to GitHub
 2. **Create Railway project** and connect GitHub
-3. **Add MySQL** service
+3. **Create a Supabase project** and copy its pooler connection string
 4. **Set environment variables**
 5. **Watch deployment logs** and verify it works
 6. **Test login** with your seeded credentials

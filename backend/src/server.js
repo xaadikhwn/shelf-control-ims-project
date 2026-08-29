@@ -10,7 +10,7 @@ const HOST = process.env.HOST || '0.0.0.0';
 
 async function ensureDatabaseExists() {
   const databaseName = process.env.DB_NAME;
-  if (!databaseName || process.env.DB_DIALECT === 'sqlite') return;
+  if (!databaseName || db.sequelize.getDialect() !== 'mysql') return;
 
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST,
