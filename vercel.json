@@ -1,12 +1,17 @@
 {
+  "installCommand": "npm install && npm install --prefix backend",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/api/[...slug]"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/stock-alert",
+      "schedule": "0 6 * * *"
     }
   ]
 }

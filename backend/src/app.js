@@ -42,11 +42,13 @@ app.use('/api/expenses', require('./routes/expenses.routes'));
 app.use('/api/customers', require('./routes/customers.routes'));
 app.use('/api/suppliers', require('./routes/suppliers.routes'));
 app.use('/api/users', require('./routes/users.routes'));
+app.use('/api/cron', require('./routes/cron.routes'));
 
 app.get(['/health', '/api/health'], (req, res) => res.json({ success: true, message: 'API is running' }));
 
 // Fallback to index.html for SPA client-side routing
-app.get('*', (req, res) => {
+// Express 5 (path-to-regexp v8) dropped bare '*' wildcards — use a named splat.
+app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
 
