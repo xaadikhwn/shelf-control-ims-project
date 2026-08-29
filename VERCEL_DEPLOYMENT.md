@@ -6,13 +6,21 @@ Functions under `/api`.
 
 ## How it's wired
 
-- `api/index.js` and `api/[...slug].js` both `export default` the same Express
-  app (`backend/src/app.js`). Vercel's filesystem routing sends `/api` to
-  `index.js` and everything else under `/api/*` to `[...slug].js` — no rewrite
-  rule is needed for this, filesystem matches (static files and functions)
-  always take precedence over `vercel.json` rewrites.
-- `vercel.json` builds the frontend (`npm run build` → `dist/`) and rewrites
-  every non-matched path to `/index.html` for client-side routing.
+- `api/index.js` exports the Express app (`backend/src/app.js`) as a single,
+  plain (non-dynamic) Serverless Function.
+- `vercel.json` rewrites every `/api/:path*` request to that one function
+  (`/api`), and everything else to `/index.html` for client-side routing.
+  Express itself still sees and routes on the original request path (a
+  rewrite doesn't change what `req.url` the function receives), so
+  `/api/auth/login`, `/api/cron/stock-alert`, etc. all resolve correctly
+  through Express's own router.
+- We deliberately don't rely on Vercel's `[...slug].js` bracket catch-all
+  convention for this — in this project's build setup (custom
+  `buildCommand`/`outputDirectory`, no framework preset) it only matched
+  single-segment paths (`/api/health` worked, `/api/auth/login` 404'd at the
+  platform level, never reaching the function). The explicit rewrite to the
+  one static `/api` function is what's proven to reliably handle every
+  path depth.
 - `installCommand` runs `npm install` at the root **and** inside `backend/`,
   since this is two separate `package.json`/`node_modules` trees and Vercel
   only installs the root by default.
