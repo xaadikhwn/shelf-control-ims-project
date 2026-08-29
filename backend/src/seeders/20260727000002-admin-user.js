@@ -1,8 +1,11 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const roles = await queryInterface.sequelize.query('SELECT id from Roles where name="Administrator";');
-    const adminRoleId = roles[0][0] ? roles[0][0].id : 1;
+    const adminRoleId = await queryInterface.rawSelect(
+      'Roles',
+      { where: { name: 'Administrator' } },
+      'id'
+    ) || 1;
     await queryInterface.bulkInsert('Users', [{
       full_name: 'System Admin',
       email: 'admin@bizmanage.com',

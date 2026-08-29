@@ -14,8 +14,15 @@ module.exports = {
     ], { ignoreDuplicates: true });
 
     // 2. Users
+    // Explicit ids here (matching every other table in this seeder) matter on
+    // Postgres: an auto-increment column still consumes a sequence value for
+    // a row skipped by ignoreDuplicates, so without them a re-run (or running
+    // after the admin-user seeder already inserted System Admin as id 1)
+    // leaves a gap — Operations Manager lands on id 3 instead of 2, which
+    // then dangles the Expenses.submitted_by references below.
     await queryInterface.bulkInsert('Users', [
       {
+        id: 1,
         full_name: 'System Admin',
         email: 'admin@bizmanage.com',
         password_hash: passwordHash,
@@ -25,6 +32,7 @@ module.exports = {
         updated_at: new Date()
       },
       {
+        id: 2,
         full_name: 'Operations Manager',
         email: 'manager@bizmanage.com',
         password_hash: passwordHash,
@@ -34,6 +42,7 @@ module.exports = {
         updated_at: new Date()
       },
       {
+        id: 3,
         full_name: 'Regular Staff',
         email: 'user@bizmanage.com',
         password_hash: passwordHash,
