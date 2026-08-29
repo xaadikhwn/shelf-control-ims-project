@@ -24,6 +24,20 @@ const getDialect = (defaultDialect = 'sqlite') => {
   return defaultDialect;
 };
 
+// Sequelize's ConnectionManager loads the dialect driver via
+// require(moduleName), where moduleName is a runtime variable — bundlers
+// that statically trace require() calls to decide what to include in a
+// serverless function (e.g. Vercel's) can't follow that, so the driver gets
+// silently left out of the deployed bundle even though it's genuinely
+// installed ("Please install pg package manually" at runtime). Passing the
+// module in directly via a static, literal require() here makes it
+// traceable and sidesteps Sequelize's dynamic require entirely.
+const getDialectModule = (dialectName) => {
+  if (dialectName === 'postgres') return require('pg');
+  if (dialectName === 'mysql') return require('mysql2');
+  return undefined;
+};
+
 const getDialectOptions = () => {
   if (process.env.DB_SSL === 'true') {
     return {
@@ -49,6 +63,7 @@ module.exports = {
     dialect,
     storage: dialect === 'sqlite' ? (process.env.DB_STORAGE || './bizmanage.sqlite') : undefined,
     logging: false,
+    ...(getDialectModule(dialect) ? { dialectModule: getDialectModule(dialect) } : {}),
     ...(Object.keys(getDialectOptions()).length ? { dialectOptions: getDialectOptions() } : {}),
   },
   test: {
@@ -67,6 +82,7 @@ module.exports = {
     dialect: getDialect('sqlite'),
     storage: process.env.DB_STORAGE || ':memory:',
     logging: false,
+    ...(getDialectModule(getDialect('sqlite')) ? { dialectModule: getDialectModule(getDialect('sqlite')) } : {}),
     ...(Object.keys(getDialectOptions()).length ? { dialectOptions: getDialectOptions() } : {}),
   },
   production: {
@@ -78,6 +94,7 @@ module.exports = {
     dialect: getDialect('mysql'),
     logging: false,
     ...(process.env.DATABASE_URL ? { url: process.env.DATABASE_URL } : {}),
+    ...(getDialectModule(getDialect('mysql')) ? { dialectModule: getDialectModule(getDialect('mysql')) } : {}),
     ...(Object.keys(getDialectOptions()).length ? { dialectOptions: getDialectOptions() } : {}),
   },
 };
