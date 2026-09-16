@@ -10,8 +10,11 @@ router.post('/register', validate(registerSchema), authController.register);
 router.post('/login', authLimiter, validate(loginSchema), authController.login);
 router.post('/logout', authController.logout);
 router.get('/me', authenticate, authController.me);
+router.patch('/me', authenticate, authController.updateMe);
+router.patch('/change-password', authenticate, authController.changePassword);
 router.post('/forgot-password', authLimiter, validate(forgotPasswordSchema), authController.forgotPassword);
 router.post('/reset-password', authLimiter, validate(resetPasswordSchema), authController.resetPassword);
 router.post('/refresh', authController.refresh);
 
 module.exports = router;
+

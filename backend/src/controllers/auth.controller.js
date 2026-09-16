@@ -344,3 +344,92 @@ exports.resetPassword = async (req, res, next) => {
     next(error);
   }
 };
+
+// Update logged-in user's own profile (name, email)
+exports.updateMe = async (req, res, next) => {
+  try {
+    const { full_name, email } = req.body;
+    const user = await db.User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: { message: 'User not found' } });
+    }
+
+    if (email) {
+      const cleanEmail = email.trim().toLowerCase();
+      // Make sure no other user already has this email
+      const existing = await db.User.findOne({ where: { email: cleanEmail } });
+      if (existing && String(existing.id) !== String(req.user.id)) {
+        return res.status(409).json({ success: false, error: { message: 'Email already in use by another account' } });
+      }
+      user.email = cleanEmail;
+    }
+
+    if (full_name && full_name.trim()) {
+      user.full_name = full_name.trim();
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: {
+        id: user.id,
+        full_name: user.full_name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Change logged-in user's own password (requires current password)
+exports.changePassword = async (req, res, next) => {
+  try {
+    const { current_password, new_password } = req.body;
+
+    if (!current_password || !new_password) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Current password and new password are required' },
+      });
+    }
+
+    if (new_password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'New password must be at least 8 characters long' },
+      });
+    }
+
+    const user = await db.User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: { message: 'User not found' } });
+    }
+
+    const isMatch = await bcrypt.compare(current_password.trim(), user.password_hash);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        error: { message: 'Current password is incorrect' },
+      });
+    }
+
+    const salt = await bcrypt.genSalt(12);
+    user.password_hash = await bcrypt.hash(new_password.trim(), salt);
+    await user.save();
+
+    // Revoke all other refresh tokens (force re-login on other devices)
+    await db.RefreshToken.update(
+      { revoked_at: new Date() },
+      { where: { user_id: user.id, revoked_at: null } }
+    );
+
+    res.status(200).json({ success: true, message: 'Password changed successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+

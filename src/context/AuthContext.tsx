@@ -21,6 +21,7 @@ interface AuthContextValue {
   login: (credentials: any) => Promise<void>;
   registerUser: (data: any) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (data: { full_name?: string; email?: string; phone?: string }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -120,9 +121,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const updateProfile = useCallback(async (data: { full_name?: string; email?: string; phone?: string }) => {
+    const res = await authApi.updateProfile(data);
+    if (!res?.success) {
+      throw new Error(res?.error?.message || 'Failed to update profile');
+    }
+    // Re-fetch latest user data from server
+    const meRes = await authApi.getMe();
+    if (meRes.success && meRes.data) {
+      setUser(mapUser(meRes.data));
+    }
+  }, []);
+
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated: !!user, isLoading, login, registerUser, logout }}
+      value={{ user, isAuthenticated: !!user, isLoading, login, registerUser, logout, updateProfile }}
     >
       {children}
     </AuthContext.Provider>

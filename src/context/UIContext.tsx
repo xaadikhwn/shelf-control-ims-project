@@ -3,6 +3,7 @@ import {
   useContext,
   useReducer,
   useCallback,
+  useEffect,
   type ReactNode,
 } from 'react';
 
@@ -13,10 +14,13 @@ export interface Toast {
   type: 'success' | 'error' | 'info' | 'warning';
 }
 
+export type Theme = 'dark' | 'light' | 'system';
+
 interface UIState {
   sidebarOpen: boolean;
   notifications: number;
   toasts: Toast[];
+  theme: Theme;
 }
 
 type UIAction =
@@ -24,13 +28,30 @@ type UIAction =
   | { type: 'SET_SIDEBAR'; payload: boolean }
   | { type: 'SET_NOTIFICATIONS'; payload: number }
   | { type: 'ADD_TOAST'; payload: Toast }
-  | { type: 'REMOVE_TOAST'; payload: string };
+  | { type: 'REMOVE_TOAST'; payload: string }
+  | { type: 'SET_THEME'; payload: Theme };
+
+function getSavedTheme(): Theme {
+  try {
+    const saved = localStorage.getItem('biz-theme');
+    if (saved === 'light' || saved === 'system' || saved === 'dark') return saved;
+  } catch { /* ignore */ }
+  return 'dark';
+}
 
 const initialState: UIState = {
   sidebarOpen: false,
   notifications: 3,
   toasts: [],
+  theme: getSavedTheme(),
 };
+
+function applyTheme(theme: Theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  try {
+    localStorage.setItem('biz-theme', theme);
+  } catch { /* ignore */ }
+}
 
 function uiReducer(state: UIState, action: UIAction): UIState {
   switch (action.type) {
@@ -47,6 +68,9 @@ function uiReducer(state: UIState, action: UIAction): UIState {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.payload),
       };
+    case 'SET_THEME':
+      applyTheme(action.payload);
+      return { ...state, theme: action.payload };
     default:
       return state;
   }
@@ -58,12 +82,18 @@ interface UIContextValue extends UIState {
   setSidebarOpen: (open: boolean) => void;
   addToast: (message: string, type?: Toast['type']) => void;
   removeToast: (id: string) => void;
+  setTheme: (theme: Theme) => void;
 }
 
 const UIContext = createContext<UIContextValue | undefined>(undefined);
 
 export function UIProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(uiReducer, initialState);
+
+  // Apply saved theme on first mount
+  useEffect(() => {
+    applyTheme(state.theme);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleSidebar = useCallback(() => {
     dispatch({ type: 'TOGGLE_SIDEBAR' });
@@ -90,6 +120,10 @@ export function UIProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'REMOVE_TOAST', payload: id });
   }, []);
 
+  const setTheme = useCallback((theme: Theme) => {
+    dispatch({ type: 'SET_THEME', payload: theme });
+  }, []);
+
   return (
     <UIContext.Provider
       value={{
@@ -98,6 +132,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
         setSidebarOpen,
         addToast,
         removeToast,
+        setTheme,
       }}
     >
       {children}

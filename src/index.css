@@ -90,3 +90,55 @@
 .toast-exit {
   animation: slideOut 0.3s ease-in;
 }
+
+/* ── Light Theme ──────────────────────────────────────── */
+[data-theme="light"] {
+  --color-navy-950: #f0f4ff;
+  --color-navy-900: #e8edf8;
+  --color-navy-800: #ffffff;
+  --color-navy-700: #f1f5f9;
+  --color-navy-600: #e2e8f0;
+  --color-navy-500: #cbd5e1;
+  --color-navy-400: #94a3b8;
+  --color-navy-300: #64748b;
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748b;
+}
+
+[data-theme="light"] body {
+  background-color: #f0f4ff;
+  color: #0f172a;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #e8edf8;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+}
+
+/* ── System Theme — respects OS preference ─────────────── */
+@media (prefers-color-scheme: light) {
+  [data-theme="system"] {
+    --color-navy-950: #f0f4ff;
+    --color-navy-900: #e8edf8;
+    --color-navy-800: #ffffff;
+    --color-navy-700: #f1f5f9;
+    --color-navy-600: #e2e8f0;
+    --color-navy-500: #cbd5e1;
+    --color-navy-400: #94a3b8;
+    --color-navy-300: #64748b;
+
+    --color-text-primary: #0f172a;
+    --color-text-secondary: #334155;
+    --color-text-muted: #64748b;
+  }
+
+  [data-theme="system"] body {
+    background-color: #f0f4ff;
+    color: #0f172a;
+  }
+}
